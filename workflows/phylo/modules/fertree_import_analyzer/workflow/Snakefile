@@ -1,0 +1,61 @@
+configfile: "config/config.yaml"
+
+indir=config["input_namespace"]
+outdir=config["output_namespace"]
+params=config["params"]
+
+rule target:
+    input:
+        process_script = srcdir("../resources/scripts/process_fertree_output.R"),
+        mcc_tree = expand(
+            "results/{indir}/{filename}",
+            indir=indir,
+            filename=params["input"]["infile"]
+        )
+    output:
+        tl_table = expand(
+            "results/{outdir}/{filename}",
+            outdir=outdir,
+            filename=params["output"]["tl_table"]
+        ),
+        plot = expand(
+            "results/{outdir}/{filename}",
+            outdir=outdir,
+            filename=params["output"]["plot"]["outfile"]
+        )
+    conda:
+        "envs/rust.yaml"
+    params:
+        attribute_lab=params["input"]["fertree"]["attribute"],
+        origin_time=params["input"]["fertree"]["latest_time"],
+        source_lab=params["input"]["fertree"]["source"],
+        destination_lab=params["input"]["fertree"]["destination"],
+        plot_max_ntaxa=params["output"]["plot"]["max_ntaxa"],
+        plot_title=params["output"]["plot"]["title"],
+        plot_x=params["output"]["plot"]["x"],
+        plot_y=params["output"]["plot"]["y"],
+        export_pdf=params["output"]["plot"]["pdf"],
+    shell:
+        """
+        rm -rf fertree
+        git clone https://github.com/jtmccr1/fertree.git
+        cd fertree
+        git checkout 5c7947d
+        cargo install --path .
+        cargo fix --bin fertree
+        cd ..
+        fertree transmission-lineages \
+            -k {params.attribute_lab} \
+            -t {params.destination_lab} \
+            -o {params.origin_time} \
+            -i {input.mcc_tree} > {output.tl_table}
+        /usr/local/bin/Rscript --vanilla {input.process_script} \
+            -i "{output.tl_table}" \
+            -s "{params.source_lab}" \
+            -m {params.plot_max_ntaxa} \
+            -t "{params.plot_title}" \
+            -x {params.plot_x} \
+            -y {params.plot_y} \
+            $(if [ {params.export_pdf} == true ]; then echo "-p"; else echo ""; fi) \
+            -o "{output.plot}"
+        """
