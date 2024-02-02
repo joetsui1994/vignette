@@ -45,7 +45,7 @@ params=config["params"]
 
 rule target:
     input:
-        process_script = srcdir("../resources/scripts/process_fertree_output.R"),
+        process_script = srcdir("./scripts/process_fertree_output.R"),
         mcc_tree = expand(
             "results/{indir}/{filename}",
             indir=indir,
