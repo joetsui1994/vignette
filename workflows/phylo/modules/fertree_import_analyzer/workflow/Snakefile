@@ -1,3 +1,42 @@
+"""(fertree) Viral Importation Analyser
+
+Phylogeographic analysis can be used to identify past viral importation events between geographic locations. One approach is to perform a Discrete Trait Analysis (DTA) to infer the location of ancestral nodes in a phylogenetic tree, therefore allowing the identification of any transitions between locations.
+
+This module takes the MCC tree output from a standatd (BEAST) DTA analysis and uses a third-party Rust-based packaged, `fertree` (https://github.com/jtmccr1/fertree), to enumerate and extract any local transmission lineages, given predefined source and destination locations. The output includes a table of transmission lineages and their associated metadata, and a plot of the size distribution of the identified lineages.
+
+Params:
+    infile (string): Input MCC tree file
+    input -> attribute (number): Name of the attribute in the MCC tree that contains the location information
+    input -> latest_time (number): Most recent sample collection date in the provided MCC tree
+    input -> source (string): Name of the source location (must match the attribute values in the MCC tree)
+    input -> destination (string): Name of the destination location (must match the attribute values in the MCC tree)
+    output -> tl_table (string): Filename of the output table of transmission lineages from fertree
+    output -> outfile (string): Filename of the output plot of the lineage size distribution
+    output -> max_ntaxa (number): Maximum lineage size to include in the lineage size distribution plot (1000 by default)
+    output -> title (string): Title of the lineage size distribution plot
+    output -> x (number): Width of the lineage size distribution plot (7.5 by default)
+    output -> y (number): Height of the lineage size distribution plot (4.5 by default)
+    output -> pdf (boolean): Export the lineage size distribution plot as a PDF if true, otherwise export as a PNG
+"""
+
+params:
+  input:
+    infile: "dta_annotated_tree.mcc.tree"
+    fertree:
+      attribute: "location"
+      latest_time: null
+      source: "origin"
+      destination: "destination"
+  output:
+    tl_table: "lineage_table.tsv"
+    plot:
+      outfile: "lineage_size_distribution.png"
+      max_ntaxa: 1000
+      title: "Lineage size distribution"
+      x: 7.5
+      y: 4.5
+      pdf: false
+
 configfile: "config/config.yaml"
 
 indir=config["input_namespace"]
