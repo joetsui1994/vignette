@@ -1,0 +1,18 @@
+input_namespace: "in"
+output_namespace: "out"
+params:
+  trees: false
+  decimal: false
+  burnin: 1000000
+  resample: 10000
+  scale: 1
+  strip: false
+  renumber: false
+  input:
+    infile1: "run-1.log"
+    infile2: "run-2.log"
+    infile3: null
+    infile4: null
+    infile5: null
+  output:
+    outfile: "combined.log"
