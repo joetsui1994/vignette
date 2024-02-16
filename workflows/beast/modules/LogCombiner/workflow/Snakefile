@@ -1,6 +1,6 @@
 """LogCombiner-BEAST1
 
-This module takes multiple (up to 5) log or tree files from BEAST (v1.10.4/5) as input and returns a single combined log or tree file as output.
+This module takes multiple log or tree files from BEAST (v1.10.4/5) as input and returns a single combined log or tree file as output.
 
 Params:
     trees (boolean): use this option to combine tree log files (default is false)
@@ -11,11 +11,7 @@ Params:
     strip (boolean): strip out all annotations (trees only)
     renumber (boolean): this option renumbers output states consecutively
     input:
-        infile1 (string): input log/tree file 1
-        infile2 (string): input log/tree file 2
-        infile3 (string): input log/tree file 3
-        infile4 (string): input log/tree file 4
-        infile5 (string): input log/tree file 5
+        infiles (list of strings): input log/tree files
     output:
         outfile (string): output combined log/tree file
 """
@@ -28,30 +24,10 @@ params=config["params"]
 
 rule target:
     input:
-        infile1 = expand(
+        infile = expand(
             "results/{indir}/{filename}",
             indir=indir,
-            filename=params["input"]["infile1"]
-        ),
-        infile2 = expand(
-            "results/{indir}/{filename}",
-            indir=indir,
-            filename=params["input"]["infile2"]
-        ),
-        infile3 = expand(
-            "results/{indir}/{filename}",
-            indir=indir,
-            filename=params["input"]["infile3"]
-        ),
-        infile4 = expand(
-            "results/{indir}/{filename}",
-            indir=indir,
-            filename=params["input"]["infile4"]
-        ),
-        infile5 = expand(
-            "results/{indir}/{filename}",
-            indir=indir,
-            filename=params["input"]["infile5"]
+            filename=params["input"]["infiles"]
         ),
     output:
         outfile = expand(
@@ -79,5 +55,5 @@ rule target:
             -scale {params.scale} \
             $(if [ {params.strip} == true ]; then echo "-strip"; else echo ""; fi) \
             $(if [ {params.renumber} == true ]; then echo "-renumber"; else echo ""; fi) \
-            {input.infile1} {input.infile2} {input.infile3} {input.infile4} {input.infile5} {output.outfile}
+            {input.infile} {output.outfile}
         """

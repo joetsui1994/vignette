@@ -9,10 +9,8 @@ params:
   strip: false
   renumber: false
   input:
-    infile1: "run-1.log"
-    infile2: "run-2.log"
-    infile3: null
-    infile4: null
-    infile5: null
+    infiles:
+      - "run-1.log"
+      - "run-2.log"
   output:
     outfile: "combined.log"
