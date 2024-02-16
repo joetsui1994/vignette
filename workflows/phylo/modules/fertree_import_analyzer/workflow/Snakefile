@@ -19,24 +19,6 @@ Params:
     output -> pdf (boolean): Export the lineage size distribution plot as a PDF if true, otherwise export as a PNG
 """
 
-params:
-  input:
-    infile: "dta_annotated_tree.mcc.tree"
-    fertree:
-      attribute: "location"
-      latest_time: null
-      source: "origin"
-      destination: "destination"
-  output:
-    tl_table: "lineage_table.tsv"
-    plot:
-      outfile: "lineage_size_distribution.png"
-      max_ntaxa: 1000
-      title: "Lineage size distribution"
-      x: 7.5
-      y: 4.5
-      pdf: false
-
 configfile: "config/config.yaml"
 
 indir=config["input_namespace"]
