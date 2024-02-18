@@ -1,6 +1,6 @@
 """LogCombiner-BEAST1
 
-This module takes two log or tree files from BEAST (v1.10.4/5) as input and returns a single combined log or tree file as output.
+This module takes two log or tree files from BEAST (v1.10.4/5) as input and returns a single combined log or tree file as output. Please see https://beast.community/logcombiner for more information.
 
 Params:
     trees (boolean): use this option to combine tree log files (default is false)
