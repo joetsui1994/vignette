@@ -1,0 +1,12 @@
+input_namespace: "in"
+output_namespace: "out"
+params:
+  heights: 'keep'
+  burnin: null
+  burninTrees: null
+  limit: null
+  target: null
+  forceDiscrete: false
+  hpd2D: null
+  infile: "input.trees"
+  outfile: "output.tree"

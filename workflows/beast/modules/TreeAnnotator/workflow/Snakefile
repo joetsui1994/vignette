@@ -1,0 +1,57 @@
+"""TreeAnnotator-BEAST1
+
+This module summarises the information from a sample of trees produced by BEAST (v1.10.4/5) onto a single "target" tree. Summary information includes the posterior probabilities of the nodes in the target tree, the posterior estimates and HPD limits of the node heights and (in the case of a relaxed molecular clock model) the rates. Please see https://beast.community/treeannotator#user-interface for more information.
+
+Params:
+    heights (string): use option to select how the node heights are summarised on the target tree ['keep' (default), 'median', 'mean', 'ca']
+    burnin (integer): number of states to be considered as 'burn-in'
+    burninTrees (integer): number of trees to be considered as 'burn-in'
+    limit (float): minimum posterior probability for a node to be annotated
+    target (string): a user target tree (file) to be annotated
+    forceDiscrete (boolean): use this option to force integer traits to be treated as discrete traits (default is false)
+    hpd2D (float): use this option to specify a (vector of comma seperated) HPD proportion(s)
+    infile (string): input trees file
+    outfile (string): output target tree file
+"""
+
+configfile: "config/config.yaml"
+
+indir=config["input_namespace"]
+outdir=config["output_namespace"]
+params=config["params"]
+
+rule target:
+    input:
+        infile = expand(
+            "results/{indir}/{filename}",
+            indir=indir,
+            filename=params["input"]["infile"]
+        )
+    output:
+        outfile = expand(
+            "results/{outdir}/{filename}",
+            outdir=outdir,
+            filename=params["output"]["outfile"]
+        )
+    conda:
+        "envs/conda.yaml"
+    params:
+        heights=params["heights"],
+        burnin=params["burnin"],
+        burninTrees=params["burninTrees"],
+        limit=params["limit"],
+        target=params["target"],
+        forceDiscrete=params["forceDiscrete"],
+        hpd2D=params["hpd2D"],
+    shell:
+        """
+        treeannotator \
+            $(if {params.heights in ["keep", "median", "mean", "ca"]}, -heights {params.heights}, -heights keep) \
+            $(if [ -z {params.burnin} ]; then echo ""; else echo -burnin {params.burnin}; fi) \
+            $(if [ -z {params.burninTrees} ]; then echo ""; else echo -burninTrees {params.burninTrees}; fi) \
+            $(if [ -z {params.limit} ]; then echo ""; else echo -limit {params.limit}; fi) \
+            $(if [ -z {params.target} ]; then echo ""; else echo -target {params.target}; fi) \
+            $(if [ {params.forceDiscrete} == true ]; then echo "-forceDiscrete"; else echo ""; fi) \
+            $(if [ -z {params.hpd2D} ]; then echo ""; else echo -hpd2D {params.hpd2D}; fi) \
+            {input.infile} {output.outfile}
+        """
