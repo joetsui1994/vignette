@@ -1,0 +1,11 @@
+input_namespace: "in"
+output_namespace: "out"
+params:
+  input:
+    infile: "example.nextstrain_output.json"
+    node_attr_1: ''
+    node_attr_2: ''
+    node_attr_3: ''
+    node_attr_4: ''
+    node_attr_5: ''
+  outfile: "output.annotated.formatted.nexus"

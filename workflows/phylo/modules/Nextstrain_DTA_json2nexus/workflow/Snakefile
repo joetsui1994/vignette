@@ -1,0 +1,49 @@
+"""Nextstrain DTA JSON-to-Nexus convertor
+
+TBA
+
+Params:
+    input -> infile (string): Filename of the input JSON file from Nextstrain DTA analysis
+    input -> node_attr_1 (string): Name of the first node attribute to include in the output Nexus file (as treee annotations)
+    input -> node_attr_2 (string): Name of the second node attribute to include in the output Nexus file (as treee annotations)
+    input -> node_attr_3 (string): Name of the third node attribute to include in the output Nexus file (as treee annotations)
+    input -> node_attr_4 (string): Name of the fourth node attribute to include in the output Nexus file (as treee annotations)
+    input -> node_attr_5 (string): Name of the fifth node attribute to include in the output Nexus file (as treee annotations)
+    outfile (string): Filename of the output Nexus (formatted) file
+"""
+
+configfile: "config/config.yaml"
+
+indir=config["input_namespace"]
+outdir=config["output_namespace"]
+params=config["params"]
+
+rule target:
+    input:
+        process_script = srcdir("./scripts/extract_annotated_nexus.py"),
+        infile = expand(
+            "results/{indir}/{filename}",
+            indir=indir,
+            filename=params["input"]["infile"]
+        )
+    output:
+        outfile = expand(
+            "results/{outdir}/{filename}",
+            outdir=outdir,
+            filename=params["outfile"]
+        )
+    conda:
+        "envs/conda.yaml"
+    params:
+        node_attr_1=params["input"]["node_attr_1"],
+        node_attr_2=params["input"]["node_attr_2"],
+        node_attr_3=params["input"]["node_attr_3"],
+        node_attr_4=params["input"]["node_attr_4"],
+        node_attr_5=params["input"]["node_attr_5"]
+    shell:
+        """
+        python {input.process_script} \
+            -i "{input.infile}" \
+            -o "{output.outfile}" \
+            -a "{params.node_attr_1} {params.node_attr_2} {params.node_attr_3} {params.node_attr_4} {params.node_attr_5}"
+        """
