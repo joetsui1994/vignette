@@ -1,0 +1,5 @@
+channels:
+  - conda-forge
+  - bioconda/label/cf201901
+dependencies:
+  - java-jdk==8.0.112
