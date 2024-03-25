@@ -29,9 +29,7 @@ params:
       uniform:
         lower: 0
         upper: 1
-  input:
-    alignment: "alignment.fasta"
-    template: ""
+  input_alignment: "alignment.nex"
   output:
     xml: "output.xml"
     filename_stem: "output"
