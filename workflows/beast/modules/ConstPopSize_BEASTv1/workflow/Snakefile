@@ -54,18 +54,10 @@ def resource(name=""):
 rule target:
     input:
         template = resource("templates/constPopSize.HKY.strict.template.xml"),
-        alignment = expand(
-            "results/{indir}/{filename}",
-            indir=indir,
-            filename=params["input"]["alignment"]
-        ),
+        alignment = f"results/{indir}/{params['input_alignment']}",
         beastgen = resource("executables/beastgen.jar"),
     output:
-        output_xml = expand(
-            "results/{outdir}/{filename}",
-            outdir=outdir,
-            filename=params["output"]["xml"]
-        )
+        output_xml = f"results/{outdir}/{params['output']['xml']}",
     conda:
         "envs/conda.yaml"
     params:
@@ -87,28 +79,38 @@ rule target:
         prior_kappa_lognormal_offset=params["priors"]["kappa"]["lognormal"]["offset"],
         prior_frequencies_uniform_lw=params["priors"]["frequencies"]["uniform"]["lower"],
         prior_frequencies_uniform_up=params["priors"]["frequencies"]["uniform"]["upper"],
-        input_template=params["input"]["template"],
         output_filename_stem=params["output"]["filename_stem"]
     shell:
         """
-        java -jar {input.beastgen} -D "\
-            chainLength={params.chain_length},\
-            screenLogEvery={params.screen_log_every},\
-            fileLogEvery={params.file_log_every},\
-            treeLogEvery={params.tree_log_every},\
-            constPopSizeInit={params.const_pop_size_init},\
-            constPopSizeLw={params.const_pop_size_lw},\
-            strictClockRate={params.strict_clock_rate},\
-            hkyFreqA={params.hky_freq_A},\
-            hkyFreqC={params.hky_freq_C},\
-            hkyFreqT={params.hky_freq_T},\
-            hkyFreqG={params.hky_freq_G},\
-            hkyKappaInit={params.hky_kappa_init},\
-            hkyKappaLw={params.hky_kappa_lw},\
-            priorKappaLognormalMean={params.prior_kappa_lognormal_mean},\
-            priorKappaLognormalStdev={params.prior_kappa_lognormal_stdev},\
-            priorKappaLognormalOffset={params.prior_kappa_lognormal_offset},\
-            priorFrequenciesUniformLw={params.prior_frequencies_uniform_lw},\
-            priorFrequenciesUniformUp={params.prior_frequencies_uniform_up},\
-            outputFilenameStem={params.output_filename_stem}" {input.template} {input.alignment} {output.output_xml}
+        # beastgen requires a relative path to the template file
+        cp {input.template} template.xml
+
+        java -jar {input.beastgen} \
+            -D "\
+                chainLength={params.chain_length},\
+                screenLogEvery={params.screen_log_every},\
+                fileLogEvery={params.file_log_every},\
+                treeLogEvery={params.tree_log_every},\
+                constPopSizeInit={params.const_pop_size_init},\
+                constPopSizeLw={params.const_pop_size_lw},\
+                strictClockRate={params.strict_clock_rate},\
+                hkyFreqA={params.hky_freq_A},\
+                hkyFreqC={params.hky_freq_C},\
+                hkyFreqT={params.hky_freq_T},\
+                hkyFreqG={params.hky_freq_G},\
+                hkyKappaInit={params.hky_kappa_init},\
+                hkyKappaLw={params.hky_kappa_lw},\
+                priorKappaLognormalMean={params.prior_kappa_lognormal_mean},\
+                priorKappaLognormalStdev={params.prior_kappa_lognormal_stdev},\
+                priorKappaLognormalOffset={params.prior_kappa_lognormal_offset},\
+                priorFrequenciesUniformLw={params.prior_frequencies_uniform_lw},\
+                priorFrequenciesUniformUp={params.prior_frequencies_uniform_up},\
+                outputFilenameStem={params.output_filename_stem}\
+            " \
+            template.xml \
+            {input.alignment} \
+            {output.output_xml}
+
+        # Tidy-up working folder
+        rm template.xml
         """
