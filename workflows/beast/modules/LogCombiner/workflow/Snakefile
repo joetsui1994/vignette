@@ -5,11 +5,11 @@ This module takes two log or tree files from BEAST (v1.10.4/5) as input and retu
 Params:
     trees (boolean): use this option to combine tree log files (default is false)
     decimal (boolean): this option converts numbers from scientific to decimal notation (default is false)
-    burnin (integer): number of states to be considered as 'burn-in'
+    burnin (integer): number of states to be considered as 'burn-in' (default is 100000)
     resample (integer): resample the log files to this frequency (the original sampling frequency must be a factor of this value)
     scale (float): a scaling factor that will multiply any time units by this value
     strip (boolean): strip out all annotations (trees only)
-    renumber (boolean): this option renumbers output states consecutively
+    renumber (boolean): this option renumbers output states consecutively (default is 10000)
     input:
         infile1 (string): input log/tree file 1
         infile2 (string): input log/tree file 2
